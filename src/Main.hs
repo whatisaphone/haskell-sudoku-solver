@@ -24,7 +24,7 @@ parseGrid source = fst $ collectValues 81 source
              where (num, src') = readValue src
                    (nums, src'') = collectValues (pred left) src'
         readValue (x:xs)
-            | isDigit x = (IntVal (read $ x:[]), xs)
+            | isDigit x = (IntVal (read [x]), xs)
             | x == '_'  = (UnknownVal, xs)
             | isSpace x = readValue xs
         readValue _ = error "invalid input"
@@ -63,9 +63,9 @@ relatedCells c = Set.toList $ Set.delete c $ Set.unions $ map Set.fromList xs
 unusedValues :: Int -> [Value] -> [Int]
 unusedValues cell nums =
     Set.toList $ Set.difference (Set.fromList [1..9]) (Set.fromList relatedVals)
-    where relatedVals = concat $ map (flattenVal . (nums !!)) $ relatedCells cell
+    where relatedVals = concatMap (flattenVal . (nums !!)) $ relatedCells cell
 
-isSolved nums = all isKnownVal nums
+isSolved = all isKnownVal
 
 solver :: Int -> [Value] -> (Bool, [Value])
 solver cell nums = case (nums !! cell, uvals) of
